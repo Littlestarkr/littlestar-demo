@@ -325,3 +325,13 @@ main{max-width:1080px;margin:0 auto;padding:8px 16px 32px;outline:none}
   45% { opacity: 1; transform: scale(1.2); }
   60% { opacity: 0; transform: scale(.5); }
 }
+
+/* 단골메뉴 등록하기(11/17): 첫 화면 단골 버튼 바로 밑 작은 버튼, 일반 주문 구역, 결제 후 등록 안내 */
+.kb-link{font:inherit;font-size:.88em;font-weight:600;min-height:40px;align-self:center;background:transparent;color:#ffd9a8;border:1.5px dashed #8a6a3a;border-radius:10px;padding:6px 14px;cursor:pointer;margin-top:-4px;touch-action:manipulation}
+.kb-link small{font-weight:400;opacity:.85;margin-left:4px}
+.kb-link:focus-visible{outline:3px solid #ffd54a;outline-offset:2px}
+.kgen{border-top:1px solid #45505a;padding-top:10px;margin-top:2px;display:flex;flex-direction:column}
+.kreg{background:#3a2e14;border:1px solid #8a6a3a;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.kreg p{margin:0;color:#ffe9c4}
+.kiosk h2 small{font-size:.7em;font-weight:500;color:#c7d0d6}
+.kitem[disabled]{opacity:.45;cursor:not-allowed}
