@@ -44,11 +44,11 @@ window.FACTS = {
   },
 
   survey: {
-    label: "자체 사전조사(n=68, 2026.11)",
+    label: "자체 사전조사(n=68, 경영지도사 동기·방송대 경영대학원 학생 대상, 2026.11)",
     n: 68, regulars: 46,
     fastFirst: 80.4, tenSecPositive: 78.3, over30s: 52.2, within3menus: 97.8,
     senior60Positive: "60대 이상 8명 전원 긍정", autoChargePositive: 39.1,
-    note: "지인 중심 편의표본, 단골 카페 이용자 46명 기준. 파일럿 실이용 데이터로 재검증 예정"
+    note: "지인 중심 편의표본, 단골 카페 이용자 46명 기준. 2027년 강서구 파일럿(3~5곳, 8주)에서 단골주문 시간·등록률·재방문율로 판정 예정"
   },
 
   regulation: {
