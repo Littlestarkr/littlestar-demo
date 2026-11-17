@@ -309,3 +309,19 @@ main{max-width:1080px;margin:0 auto;padding:8px 16px 32px;outline:none}
 .contact-mail { display: inline-flex; align-items: center; gap: .4em; min-height: 48px; padding: .6em 1em; margin: .25em 0; border: 1px solid currentColor; border-radius: 10px; font-size: 1.05rem; font-weight: 600; text-decoration: none; }
 .contact-mail .ic { font-size: 1.6rem; line-height: 1; }
 .contact-mail:hover, .contact-mail:focus-visible { text-decoration: underline; }
+
+/* 로고 별 반짝임(11/17): 빛남+작은 별빛 2개. '움직임 끄기'·prefers-reduced-motion이면 위 공통 규칙으로 멈춤 */
+.logo { position: relative; display: inline-block; animation: starTwinkle 2.4s ease-in-out infinite; }
+.logo::before, .logo::after { content: ""; position: absolute; width: 6px; height: 6px; background: var(--star); opacity: 0; pointer-events: none;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); animation: starSpark 2.4s ease-in-out infinite; }
+.logo::before { top: -4px; right: -6px; }
+.logo::after { bottom: -2px; left: -6px; width: 4px; height: 4px; animation-delay: 1.2s; }
+@keyframes starTwinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: .85; text-shadow: 0 0 0 transparent; }
+  50% { transform: scale(1.18) rotate(8deg); opacity: 1; text-shadow: 0 0 6px var(--star), 0 0 12px var(--star); }
+}
+@keyframes starSpark {
+  0%, 30%, 100% { opacity: 0; transform: scale(.3); }
+  45% { opacity: 1; transform: scale(1.2); }
+  60% { opacity: 0; transform: scale(.5); }
+}
