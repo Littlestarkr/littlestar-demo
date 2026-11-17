@@ -37,7 +37,7 @@
     else { a.href = "#contact-pending"; a.addEventListener("click", function (e) { e.preventDefault(); $("#contactLine").scrollIntoView(); $("#contactLine").focus && $("#contactLine").setAttribute("tabindex", "-1"); $("#contactLine").focus(); }); }
   });
   $("#contactLine").innerHTML = F.contactEmail
-    ? '<a href="' + mailHref("리틀스타 문의") + '">' + esc(F.contactEmail) + "</a>"
+    ? '<a class="contact-mail" href="' + mailHref("[리틀스타 문의]") + '"><span aria-hidden="true">✉</span> ' + esc(F.contactEmail) + '</a><br><small>누르면 메일 앱이 열립니다.</small>'
     : "문의 이메일은 공개 전에 확정해 이곳에 표시합니다.";
 
   /* ---------- 4.4 실측 vs 모의 테스트 비교 블록(C-08) ---------- */

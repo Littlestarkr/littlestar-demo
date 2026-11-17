@@ -319,6 +319,10 @@ main{max-width:1080px;margin:0 auto;padding:8px 16px 32px;outline:none}
 .stagebar li[aria-current]{border-color:var(--accent,#0e6b5c);color:var(--fg);font-weight:700}
 .mylist li[aria-current]{outline:2px solid var(--accent,#0e6b5c)}
 
+/* 문의 이메일 링크: 모바일에서 누르기 쉽게(최소 48px) */
+.contact-mail { display: inline-flex; align-items: center; gap: .4em; min-height: 48px; padding: .6em 1em; margin: .25em 0; border: 1px solid currentColor; border-radius: 10px; font-size: 1.05rem; font-weight: 600; text-decoration: none; word-break: break-all; }
+.contact-mail:hover, .contact-mail:focus-visible { text-decoration: underline; }
+
 </style>
 <script>try{var p=JSON.parse(localStorage.getItem("ls_prefs")||"{}");if(p.big)document.documentElement.classList.add("big");if(p.calm)document.documentElement.classList.add("calm");}catch(e){}</script>
 </head>
@@ -576,7 +580,7 @@ main{max-width:1080px;margin:0 auto;padding:8px 16px 32px;outline:none}
  */
 window.FACTS = {
   version: "사업계획서 v15 (2026-11-17) 기준",
-  contactEmail: "", // 【확인】 문의 이메일 확정 후 입력. 비어 있으면 '공개 전 확정' 안내가 표시됩니다.
+  contactEmail: "happyojh@gmail.com", // 문의 이메일(11/17 작가님 지정). 비우면 '공개 전 확정' 안내가 표시됩니다.
 
   field: {
     label: "현장 실측",
@@ -762,7 +766,7 @@ window.MENU = {
     else { a.href = "#contact-pending"; a.addEventListener("click", function (e) { e.preventDefault(); $("#contactLine").scrollIntoView(); $("#contactLine").focus && $("#contactLine").setAttribute("tabindex", "-1"); $("#contactLine").focus(); }); }
   });
   $("#contactLine").innerHTML = F.contactEmail
-    ? '<a href="' + mailHref("리틀스타 문의") + '">' + esc(F.contactEmail) + "</a>"
+    ? '<a class="contact-mail" href="' + mailHref("[리틀스타 문의]") + '"><span aria-hidden="true">✉</span> ' + esc(F.contactEmail) + '</a><br><small>누르면 메일 앱이 열립니다.</small>'
     : "문의 이메일은 공개 전에 확정해 이곳에 표시합니다.";
 
   /* ---------- 4.4 실측 vs 모의 테스트 비교 블록(C-08) ---------- */

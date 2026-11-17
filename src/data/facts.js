@@ -5,7 +5,7 @@
  */
 window.FACTS = {
   version: "사업계획서 v15 (2026-11-17) 기준",
-  contactEmail: "", // 【확인】 문의 이메일 확정 후 입력. 비어 있으면 '공개 전 확정' 안내가 표시됩니다.
+  contactEmail: "happyojh@gmail.com", // 문의 이메일(11/17 작가님 지정). 비우면 '공개 전 확정' 안내가 표시됩니다.
 
   field: {
     label: "현장 실측",
