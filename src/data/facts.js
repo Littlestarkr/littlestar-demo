@@ -5,7 +5,9 @@
  */
 window.FACTS = {
   version: "사업계획서 v15 (2026-11-17) 기준",
-  contactEmail: "happyojh@gmail.com", // 문의 이메일(11/17 작가님 지정). 비우면 '공개 전 확정' 안내가 표시됩니다.
+  // 문의 메일(11/17 작가님 지정). 화면·소스에 주소가 그대로 보이지 않도록 [도메인, 아이디]를 각각 거꾸로 적어 두고 누를 때 조립합니다.
+  // 바꾸는 법: 예) abc@naver.com → ["moc.revan", "cba"]. 비우면([]) '공개 전 확정' 안내가 표시됩니다.
+  contactParts: ["moc.liamg", "hjoyppah"],
 
   field: {
     label: "현장 실측",

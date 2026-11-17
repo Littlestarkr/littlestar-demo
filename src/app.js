@@ -31,14 +31,20 @@
   $$("[data-f]").forEach(function (el) { var v = get(el.getAttribute("data-f"), F); el.textContent = v == null ? "" : fmt(v); });
 
   /* ---------- 문의(C-04) ---------- */
-  function mailHref(subject) { return "mailto:" + F.contactEmail + "?subject=" + encodeURIComponent(subject); }
+  // 주소는 화면에 표시하지 않고, 누르는 순간에만 조립해 메일 앱을 엽니다(단순 수집 봇 회피용, 완전한 보호는 아님).
+  function rev(t) { return String(t).split("").reverse().join(""); }
+  var CP = F.contactParts || [];
+  var hasMail = CP.length === 2;
+  function openMail(subject) { location.href = "mai" + "lto:" + rev(CP[1]) + "\u0040" + rev(CP[0]) + "?subject=" + encodeURIComponent(subject); }
+  function bindMail(a, subject) { a.href = "#contact"; a.addEventListener("click", function (e) { e.preventDefault(); openMail(subject); }); }
   $$("[data-mail]").forEach(function (a) {
-    if (F.contactEmail) { a.href = mailHref(a.getAttribute("data-mail")); }
+    if (hasMail) { bindMail(a, a.getAttribute("data-mail")); }
     else { a.href = "#contact-pending"; a.addEventListener("click", function (e) { e.preventDefault(); $("#contactLine").scrollIntoView(); $("#contactLine").focus && $("#contactLine").setAttribute("tabindex", "-1"); $("#contactLine").focus(); }); }
   });
-  $("#contactLine").innerHTML = F.contactEmail
-    ? '<a class="contact-mail" href="' + mailHref("[리틀스타 문의]") + '"><span aria-hidden="true">✉</span> ' + esc(F.contactEmail) + '</a><br><small>누르면 메일 앱이 열립니다.</small>'
-    : "문의 이메일은 공개 전에 확정해 이곳에 표시합니다.";
+  if (hasMail) {
+    $("#contactLine").innerHTML = '<a class="contact-mail" href="#contact" aria-label="문의 메일 보내기" title="문의 메일 보내기"><span class="ic" aria-hidden="true">✉</span><span aria-hidden="true">메일 보내기</span></a>';
+    bindMail($("#contactLine a"), "[리틀스타 문의]");
+  } else { $("#contactLine").textContent = "문의 이메일은 공개 전에 확정해 이곳에 표시합니다."; }
 
   /* ---------- 4.4 실측 vs 모의 테스트 비교 블록(C-08) ---------- */
   var CMP_FIXED = "모의 테스트와 추정값은 실제 매장 측정값이 아닙니다. 실제 결제·대기·제조 시간은 포함되지 않았으며, 리틀스타의 실매장 효과는 2027년 파일럿에서 측정합니다.";

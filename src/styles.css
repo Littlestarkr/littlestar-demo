@@ -306,5 +306,6 @@ main{max-width:1080px;margin:0 auto;padding:8px 16px 32px;outline:none}
 .mylist li[aria-current]{outline:2px solid var(--accent,#0e6b5c)}
 
 /* 문의 이메일 링크: 모바일에서 누르기 쉽게(최소 48px) */
-.contact-mail { display: inline-flex; align-items: center; gap: .4em; min-height: 48px; padding: .6em 1em; margin: .25em 0; border: 1px solid currentColor; border-radius: 10px; font-size: 1.05rem; font-weight: 600; text-decoration: none; word-break: break-all; }
+.contact-mail { display: inline-flex; align-items: center; gap: .4em; min-height: 48px; padding: .6em 1em; margin: .25em 0; border: 1px solid currentColor; border-radius: 10px; font-size: 1.05rem; font-weight: 600; text-decoration: none; }
+.contact-mail .ic { font-size: 1.6rem; line-height: 1; }
 .contact-mail:hover, .contact-mail:focus-visible { text-decoration: underline; }
