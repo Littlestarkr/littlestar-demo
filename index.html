@@ -350,6 +350,23 @@ main{max-width:1080px;margin:0 auto;padding:8px 16px 32px;outline:none}
 .kiosk h2 small{font-size:.7em;font-weight:500;color:#c7d0d6}
 .kitem[disabled]{opacity:.45;cursor:not-allowed}
 
+/* 키오스크 첫 화면(11/18): 왼쪽 일반 주문, 오른쪽 단골 주문 + 바로 밑 작은 단골메뉴 등록하기. 모바일 폭에서도 좌우 2열 유지 */
+.kiosk.khome-wrap{min-height:0;gap:10px}
+.khome{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:stretch}
+.khome-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.khome-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;min-height:170px;padding:14px 8px;word-break:keep-all;overflow-wrap:anywhere}
+.khome-gen{flex:1;height:100%}
+.khome-ls{flex:1}
+.khome-btn .kt{font-size:1.25em;font-weight:800}
+.khome-btn small{font-size:.75em;line-height:1.35}
+.khome .kb-link{align-self:stretch;margin:0;text-align:center;word-break:keep-all;overflow-wrap:anywhere;line-height:1.3}
+.khome .kb-link small{display:block;margin:2px 0 0}
+.kst{display:block;font-size:.72em;font-weight:600;background:rgba(0,0,0,.28);border-radius:8px;padding:3px 6px;margin-top:2px}
+.kst.sug{background:#ffd54a;color:#222}
+.kb.suggested{outline:3px dashed #ffd54a;outline-offset:3px}
+.khome-note{margin:0;text-align:center;color:#c7d0d6 !important}
+@media (max-width:360px){.khome-btn{min-height:150px;padding:12px 6px}.khome-btn .kt{font-size:1.1em}}
+
 </style>
 <script>try{var p=JSON.parse(localStorage.getItem("ls_prefs")||"{}");if(p.big)document.documentElement.classList.add("big");if(p.calm)document.documentElement.classList.add("calm");}catch(e){}</script>
 </head>
@@ -1104,7 +1121,7 @@ window.MENU = {
    * P2 모의 주문 체험
    * ===================================================================== */
   var IDLE_MS = 60000;
-  var MODE_NAME = { legacy: "현행 키오스크 주문", ls: "리틀스타 단골 주문", reg: "리틀스타 단골메뉴 등록" };
+  var MODE_NAME = { legacy: "일반 주문(현행과 같은 순서)", ls: "리틀스타 단골 주문", reg: "리틀스타 단골메뉴 등록" };
   function apSec(pay) { var a = F.payment && F.payment.approvalSec || {}; return +(a[pay] != null ? a[pay] : a.card || 0); }
   function apTxt() { var a = F.payment.approvalSec; return "카드 " + a.card.toFixed(1) + "초 · 간편결제 " + a.easy.toFixed(1) + "초 · 선불충전금 " + a.prepaid.toFixed(1) + "초"; }
   function approvalMs(r) { return Math.round(apSec(r.pay) * 1000); }
@@ -1132,27 +1149,41 @@ window.MENU = {
         '<p class="small muted">' + (t.fromMy ? "단골메뉴 등록에 저장한 메뉴·수량·결제 설정입니다." : "데모 고객의 단골 메뉴입니다. 내 메뉴로 하려면 <a href=\"#my-menu\">단골메뉴 등록</a>을 먼저 해 보세요.") + " 리틀스타 체험용 고객번호: <b>" + esc(t.cno) + "</b></p></div>";
     },
     modeCard: function (mode) {
-      var r = this.runs[mode], other = this.runs[mode === "legacy" ? "ls" : "legacy"], h = '<div class="sec pick-card' + (this.suggest === mode ? " suggested" : "") + '" style="margin:0">';
+      var h = '<div class="sec pick-card" style="margin:0">';
       h += "<h2>" + MODE_NAME[mode] + "</h2>";
-      if (this.suggest === mode) h += '<p class="chip t-mine">무작위 추천: 이쪽 먼저</p>';
       h += mode === "legacy"
         ? '<ol class="mini"><li>매장/포장</li><li>메뉴 찾기·옵션</li><li>광고 팝업·확인·일회용품</li><li>멤버십 번호 입력(식별)·포인트</li><li>결제수단 선택 → 카드 넣기</li></ol><p class="small muted">결제 전 약 13단계</p>'
-        : '<ol class="mini"><li>단골 주문 → 고객 식별<br><small>QR·휴대폰 태그 / 고객번호 6자리 (보조: 휴대폰 번호)</small></li><li>나의 메뉴 확인(수량 ±) → 주문하기</li><li>등록 결제수단 자동 선택 → 결제하기</li></ol><p class="small muted">식별 뒤 터치 2회 · 첫 화면에 [일반 주문]과 [단골메뉴 등록하기]도 있음</p>';
-      if (r && r.stalled) h += '<p class="note">60초 넘게 멈춰 비교에서 제외됨. 다시 해 주세요.</p>';
-      else if (r) h += '<p class="done-line"><span class="ok">✔ 완료</span> ' + s1(tTot(r)) + "초 · " + (r.why.length ? '<span class="bad">과제와 다름</span>' : "과제와 일치") + "</p>";
-      else if (other && !other.stalled) h += '<p class="small"><b>같은 메뉴로 이쪽도 해 보세요.</b></p>';
-      h += '<div class="pick-btns"><button type="button" class="btn primary" data-t="start" data-v="' + mode + '">' + (r ? "다시 주문 ⏱" : "주문 시작 ⏱") + '</button><button type="button" class="btn sm ghost" data-t="browse" data-v="' + mode + '">둘러보기</button></div></div>';
-      return h;
+        : '<ol class="mini"><li>단골 주문 → 고객 식별<br><small>QR·휴대폰 태그 / 고객번호 6자리 (보조: 휴대폰 번호)</small></li><li>나의 메뉴 확인(수량 ±) → 주문하기</li><li>등록 결제수단 자동 선택 → 결제하기</li></ol><p class="small muted">식별 뒤 터치 2회</p>';
+      return h + "</div>";
+    },
+    /* --- 리틀스타 키오스크 첫 화면(11/18): 왼쪽 [일반 주문], 오른쪽 [단골 주문] + 바로 밑 작은 [단골메뉴 등록하기] --- */
+    homeView: function () {
+      var self = this, ra = this.runs.legacy, rb = this.runs.ls;
+      function st(mode) {
+        var r = self.runs[mode], o = self.runs[mode === "legacy" ? "ls" : "legacy"], x = "";
+        if (self.suggest === mode) x += '<span class="kst sug">무작위 추천: 이쪽 먼저</span>';
+        if (r && r.stalled) x += '<span class="kst">60초 넘게 멈춤 · 다시 해 주세요</span>';
+        else if (r) x += '<span class="kst">✔ ' + s1(tTot(r)) + "초 · " + (r.why.length ? "과제와 다름" : "과제와 일치") + "</span>";
+        else if (o && !o.stalled) x += '<span class="kst">같은 메뉴로 이쪽도</span>';
+        return x;
+      }
+      return '<div class="kiosk khome-wrap" role="region" aria-label="리틀스타 키오스크 첫 화면(모형)"><div class="k-head"><span>첫 화면</span><span>리틀스타(모형)</span></div><h2>주문 방법을 선택해 주세요</h2>' +
+        '<div class="khome"><div class="khome-col"><button type="button" class="kb sec2 khome-btn khome-gen' + (this.suggest === "legacy" ? " suggested" : "") + '" data-t="start" data-v="legacy"><span class="kt">일반 주문</span><small>메뉴를 직접 고르기<br>지금 키오스크와 같은 순서</small>' + st("legacy") + "</button></div>" +
+        '<div class="khome-col"><button type="button" class="kb acc khome-btn khome-ls' + (this.suggest === "ls" ? " suggested" : "") + '" data-t="start" data-v="ls"><span class="kt">★ 단골 주문</span><small>QR·고객번호로 확인<br>늘 먹던 메뉴 바로 주문</small>' + st("ls") + "</button>" +
+        '<button type="button" class="kb-link" data-t="reg">＋ 단골메뉴 등록하기<small>처음 한 번 · 최대 5개</small></button></div></div>' +
+        '<p class="small khome-note">버튼을 누르면 해당 절차로 들어갑니다. 시간은 두 경로 모두 다음 화면의 첫 터치부터 잽니다.</p></div>';
     },
     selectView: function () {
       var t = this.task(), h = "";
       if (this.notice) { h += '<p class="note" role="status">' + esc(this.notice) + "</p>"; this.notice = null; }
       h += '<p class="disclaimer">이 체험은 실제 키오스크가 아닌 웹 모형입니다. 측정되는 시간은 이 화면에서 주문한 시간이며 실제 매장 시간과 다를 수 있습니다.</p>';
-      h += '<p class="small" style="margin:0 0 8px">리틀스타 키오스크 첫 화면에는 <b>[단골 주문]</b>과 <b>[일반 주문]</b>이 함께 있습니다. 일반 주문은 지금 키오스크와 같은 순서 그대로(왼쪽 ‘현행 키오스크 주문’과 같음)라 처음 온 손님도 평소처럼 쓰고, 이 체험에서 재는 리틀스타 시간과 10초 목표는 <b>단골 주문 경로 기준</b>입니다. 단골 메뉴(최대 5개)는 첫 화면의 [단골메뉴 등록하기]나 <a href="#my-menu">웹 단골메뉴 등록</a>에서 처음 한 번 등록합니다.</p>';
-      h += '<h2 class="pair-h">두 방식 중 골라 들어가 같은 메뉴를 주문해 보세요</h2><p class="small" style="margin:0 0 8px">과제: <b>' + t.menus.map(function (m) { return esc(describe(m, true)) + " × " + m.qty; }).join(", ") + " · " + (t.profile.takeout ? "포장" : "매장") + '</b> (자세한 조건은 아래)</p><div class="pair">' + this.modeCard("legacy") + this.modeCard("ls") + "</div>";
+      h += '<p class="small" style="margin:0 0 8px">과제: <b>' + t.menus.map(function (m) { return esc(describe(m, true)) + " × " + m.qty; }).join(", ") + " · " + (t.profile.takeout ? "포장" : "매장") + '</b> (자세한 조건은 아래). 두 경로로 같은 메뉴를 주문해 비교해 보세요.</p>';
+      h += this.homeView();
+      h += '<p class="small" style="margin:8px 0">[일반 주문]은 지금 키오스크와 같은 순서 그대로라 처음 온 손님도 평소처럼 쓰고, 이 체험에서 재는 리틀스타 시간과 10초 목표는 <b>단골 주문 경로 기준</b>입니다. 단골 메뉴(최대 5개)는 [단골메뉴 등록하기]나 <a href="#my-menu">웹 단골메뉴 등록</a>에서 처음 한 번 등록합니다. 시간 측정 없이 <button type="button" class="linkish" data-t="browse" data-v="legacy">일반 주문 둘러보기</button> · <button type="button" class="linkish" data-t="browse" data-v="ls">단골 주문 둘러보기</button></p>';
+      h += '<details class="sec"><summary><b>두 경로의 순서 보기</b></summary><div class="pair" style="margin-top:8px">' + this.modeCard("legacy") + this.modeCard("ls") + "</div></details>";
       h += this.taskCard(t);
       h += '<p class="small">어느 쪽부터 해도 됩니다. 두 번째로 하는 쪽은 메뉴를 이미 알고 있어 조금 유리할 수 있으므로 결과에 순서를 함께 표시합니다. 순서를 정하기 어렵다면 <button type="button" class="linkish" data-t="suggest">무작위로 정하기</button>.</p>';
-      h += '<details class="sec"><summary><b>공정하게 비교하기 위한 규칙</b></summary><ul class="ticks"><li>기존형 단계·순서는 실제 주문절차도(14화면)와 같게 만들었습니다(<a href="#compare">절차 비교</a>에서 공개).</li><li>두 방식의 버튼 크기·반응 속도가 같고, 일부러 넣은 로딩 지연이 없습니다.</li><li>시간은 첫 터치부터 결제 승인 완료까지입니다. 승인 대기는 결제수단별 가정값(' + apTxt() + ')을 두 방식에 똑같이 넣었습니다. ' + esc(F.payment.basis) + '.</li><li>광고 팝업은 실제 절차에 있어 넣었지만 [건너뛰기]가 바로 보입니다.</li><li>번호는 두 방식 모두 같은 숫자판으로 직접 눌러야 합니다(자동 입력 없음).</li><li>리틀스타는 메뉴를 처음 한 번 등록해야 빨라집니다. 그 등록 시간도 결과에 함께 보여 줍니다.</li><li>웹 모형에는 줄 서기·카드 삽입 동작·뒤 손님의 압박이 없어 실제보다 빠를 수 있습니다.</li></ul></details>';
+      h += '<details class="sec"><summary><b>공정하게 비교하기 위한 규칙</b></summary><ul class="ticks"><li>기존형 단계·순서는 실제 주문절차도(14화면)와 같게 만들었습니다(<a href="#compare">절차 비교</a>에서 공개).</li><li>두 방식의 버튼 크기·반응 속도가 같고, 일부러 넣은 로딩 지연이 없습니다.</li><li>첫 화면에서 [일반 주문]·[단골 주문]을 고르는 터치는 두 경로 모두 시간에 넣지 않고, 다음 화면의 첫 터치부터 결제 승인 완료까지 잽니다. 승인 대기는 결제수단별 가정값(' + apTxt() + ')을 두 방식에 똑같이 넣었습니다. ' + esc(F.payment.basis) + '.</li><li>광고 팝업은 실제 절차에 있어 넣었지만 [건너뛰기]가 바로 보입니다.</li><li>번호는 두 방식 모두 같은 숫자판으로 직접 눌러야 합니다(자동 입력 없음).</li><li>리틀스타는 메뉴를 처음 한 번 등록해야 빨라집니다. 그 등록 시간도 결과에 함께 보여 줍니다.</li><li>웹 모형에는 줄 서기·카드 삽입 동작·뒤 손님의 압박이 없어 실제보다 빠를 수 있습니다.</li></ul></details>';
       var hist = store.get("ls_runs", []);
       if (hist.length) {
         h += '<div class="sec history"><h2>내 체험 기록 <span class="chip t-mine">이 기기에만 저장</span></h2><ol>' + hist.slice(-10).reverse().map(function (x) {
@@ -1172,14 +1203,14 @@ window.MENU = {
       if (r.mode === "reg") {
         h += '<div class="task"><h2>키오스크에서 단골메뉴 등록 (체험)</h2><p style="margin:0">본인 확인 → 메뉴 최대 5개 → 결제수단, 세 화면이면 끝납니다. 처음 한 번만 하고, 다음부터는 첫 화면에서 QR·고객번호로 바로 주문합니다. 번호는 저장·전송되지 않고, 고른 메뉴만 이 기기 브라우저에 저장됩니다.</p>' + (r.dropped ? '<p class="small muted" style="margin:.4em 0 0">진행 중이던 단골 주문 시간 측정은 멈췄습니다(기록 없음).</p>' : "") + "</div>";
         h += '<div class="timerbar"><span class="order-tag">' + label + '</span><span class="chip t-estimate">주문 시간 측정 안 함</span></div>';
-        h += '<div class="kiosk" id="kiosk" role="region" aria-label="' + label + ' 모의 화면"></div><div class="cta-row"><button type="button" class="btn ghost sm" data-t="back">선택 화면으로</button></div>';
+        h += '<div class="kiosk" id="kiosk" role="region" aria-label="' + label + ' 모의 화면"></div><div class="cta-row"><button type="button" class="btn ghost sm" data-t="back">첫 화면으로</button></div>';
         return h;
       }
       h += this.taskCard(this.task());
       if (this.browse) h += '<div class="timerbar"><span class="order-tag">' + label + ' 둘러보기</span><span class="chip t-estimate">시간 측정 안 함</span></div>';
       else h += '<div class="timerbar"><span class="order-tag">' + label + ' <span class="small muted">(' + (other && !other.stalled ? "두 번째" : "첫 번째") + ')</span></span><span>시간 <span class="timer" id="timer">0.0</span>초</span></div>';
       h += '<div class="kiosk" id="kiosk" role="region" aria-label="' + label + ' 모의 화면"></div>';
-      h += '<div class="cta-row"><button type="button" class="btn ghost sm" data-t="back">선택 화면으로</button></div>';
+      h += '<div class="cta-row"><button type="button" class="btn ghost sm" data-t="back">첫 화면으로</button></div>';
       return h;
     },
     startTick: function () {
@@ -1286,13 +1317,11 @@ window.MENU = {
       var r = this.run, h = "", m = my.has() ? my.data : null, menus = this.lsMenus();
       if (n === "who") {
         var im = r.idMode || "cno";
-        h = this.head("첫 화면") + '<h2>단골 주문 · 고객 확인</h2><p class="small" style="text-align:center;margin:0 0 6px">QR·태그 또는 고객번호로 확인하세요</p>' +
+        h = this.head("고객 확인") + '<h2>단골 주문 · 고객 확인</h2><p class="small" style="text-align:center;margin:0 0 6px">QR·태그 또는 고객번호로 확인하세요</p>' +
           '<button type="button" class="kb acc" data-k="tag">📲 QR·휴대폰 태그로 바로 확인<small>휴대폰을 리더기에 대면 끝(체험: 이 버튼 1회)</small></button>' +
-          '<button type="button" class="kb-link" data-k="regStart">＋ 단골메뉴 등록하기 <small>처음 한 번 · 최대 5개</small></button>' +
           '<div class="krow" role="group" aria-label="번호 종류"><button type="button" class="kb sec2" data-k="idmode" data-v="cno" aria-pressed="' + (im === "cno") + '">고객번호 6자리<small>기본</small></button><button type="button" class="kb sec2" data-k="idmode" data-v="phone" aria-pressed="' + (im === "phone") + '">휴대폰 번호 8자리<small>보조</small></button></div>' +
           (im === "phone" ? this.phoneShow() : this.cnoShow()) +
-          '<p class="kwarn">' + (im === "phone" ? "체험입니다. 실제 번호 대신 아무 숫자 8자리를 누르세요. 다 누르면 바로 넘어갑니다." : "체험용 고객번호 " + esc(this.task().cno) + " (아무 6자리나 인식). 다 누르면 바로 넘어갑니다.") + " 번호는 가려지고 저장되지 않습니다. PC는 키보드 숫자키도 됩니다.</p>" + this.keypad() +
-          '<div class="kgen"><button type="button" class="kb sec2" data-k="general">일반 주문<small>메뉴를 직접 고르기 · 지금 키오스크와 같은 순서</small></button></div>';
+          '<p class="kwarn">' + (im === "phone" ? "체험입니다. 실제 번호 대신 아무 숫자 8자리를 누르세요. 다 누르면 바로 넘어갑니다." : "체험용 고객번호 " + esc(this.task().cno) + " (아무 6자리나 인식). 다 누르면 바로 넘어갑니다.") + " 번호는 가려지고 저장되지 않습니다. PC는 키보드 숫자키도 됩니다.</p>" + this.keypad();
       } else if (n === "mymenu") {
         var prof = this.task().profile;
         if (!r.qtys) r.qtys = menus.map(function (x) { return x.qty || 1; });
@@ -1352,7 +1381,7 @@ window.MENU = {
       } else if (n === "rdone") {
         h = this.head("등록 완료") + '<div class="kdone" style="padding:16px 0"><div class="big" aria-hidden="true">★</div><h2>단골 등록이 끝났습니다</h2><p>체험용 고객번호 <b class="num">' + esc(my.data && my.data.customerNo || "-") + "</b><br>다음부터 첫 화면에서 QR·고객번호로 확인하면<br>아래 메뉴가 바로 나옵니다.</p></div>" +
           '<div class="kcart" style="margin:0"><ul>' + sel.map(function (m, i) { return "<li>" + (i === 0 ? "★ " : "") + esc(describe(m, true)) + " × " + m.qty + "</li>"; }).join("") + "</ul>" + (r.saveMsg ? '<span class="small">' + esc(r.saveMsg) + "</span>" : "") + "</div>" +
-          '<button type="button" class="kb acc" data-k="next">선택 화면으로 (이 메뉴로 단골 주문 해 보기)</button>';
+          '<button type="button" class="kb acc" data-k="next">첫 화면으로 (이 메뉴로 단골 주문 해 보기)</button>';
       }
       return h;
     },
@@ -1378,7 +1407,7 @@ window.MENU = {
         d.done = true; d.menus.forEach(function (m) { my.addLib(d, m); });
         if (!d.customerNo) d.customerNo = String(100000 + Math.floor(Math.random() * 900000));
         d.savedAt = new Date().toISOString();
-        if (store.set("ls_my", d)) { my.load(); this.reset(); this.notice = "단골 등록을 마쳤습니다. 이제 ‘리틀스타 단골 주문’에서 방금 등록한 메뉴로 주문해 보세요."; }
+        if (store.set("ls_my", d)) { my.load(); this.reset(); this.notice = "단골 등록을 마쳤습니다. 이제 첫 화면의 [단골 주문]으로 방금 등록한 메뉴를 주문해 보세요."; }
         else { my.data = d; r.saveMsg = "이 브라우저에서는 저장할 수 없어(사생활 보호 모드 등) 이 화면에서만 보입니다."; }
         r.phone = ""; this.screen("rdone");
       }
@@ -1387,7 +1416,7 @@ window.MENU = {
     nextLabel: function () {
       if (this.browse) return "둘러보기 마치기";
       var other = this.runs[this.run.mode === "legacy" ? "ls" : "legacy"];
-      return other && !other.stalled && !this.run.stalled ? "결과 보기" : "선택 화면으로";
+      return other && !other.stalled && !this.run.stalled ? "결과 보기" : "첫 화면으로";
     },
     modal: function (kind) {
       if (kind === "idle") {
@@ -1562,18 +1591,18 @@ window.MENU = {
     },
     browseEndView: function () {
       var o = this.run.mode === "legacy" ? "ls" : "legacy";
-      return '<div class="result"><h2>둘러보기를 마쳤습니다</h2><p>둘러보기는 시간을 재지 않았고 기록도 남기지 않았습니다.</p><div class="cta-row"><button type="button" class="btn" data-t="browse" data-v="' + o + '">' + MODE_NAME[o] + ' 둘러보기</button><button type="button" class="btn primary" data-t="back">선택 화면으로</button></div></div>';
+      return '<div class="result"><h2>둘러보기를 마쳤습니다</h2><p>둘러보기는 시간을 재지 않았고 기록도 남기지 않았습니다.</p><div class="cta-row"><button type="button" class="btn" data-t="browse" data-v="' + o + '">' + MODE_NAME[o] + ' 둘러보기</button><button type="button" class="btn primary" data-t="back">첫 화면으로</button></div></div>';
     },
     onClick: function (e) {
       if (e.target.closest("#kiosk")) { this.onKiosk(e); return; }
       var b = e.target.closest("[data-t]"); if (!b) return;
       var a = b.getAttribute("data-t");
-      if (a === "start") this.begin(b.getAttribute("data-v"), false);
-      else if (a === "browse") this.begin(b.getAttribute("data-v"), true);
+      if (a === "start" || a === "browse") { var md = b.getAttribute("data-v"); this.begin(md, a === "browse", md === "legacy" ? { viaLs: true } : null); }
+      else if (a === "reg") this.startReg();
       else if (a === "back") this.toSelect();
       else if (a === "reset") { this.reset(); this.toSelect(); }
       else if (a === "again") { var f = this.first === "legacy" ? "ls" : "legacy"; this.reset(); this.suggest = f; this.toSelect(); }
-      else if (a === "suggest") { this.suggest = Math.random() < 0.5 ? "legacy" : "ls"; this.render(); var s = $("#tryRoot .suggested button"); if (s) s.focus(); }
+      else if (a === "suggest") { this.suggest = Math.random() < 0.5 ? "legacy" : "ls"; this.render(); var s = $("#tryRoot .suggested"); if (s) s.focus(); }
     }
   };
   $("#tryRoot").addEventListener("click", function (e) { tryp.onClick(e); });

@@ -335,3 +335,20 @@ main{max-width:1080px;margin:0 auto;padding:8px 16px 32px;outline:none}
 .kreg p{margin:0;color:#ffe9c4}
 .kiosk h2 small{font-size:.7em;font-weight:500;color:#c7d0d6}
 .kitem[disabled]{opacity:.45;cursor:not-allowed}
+
+/* 키오스크 첫 화면(11/18): 왼쪽 일반 주문, 오른쪽 단골 주문 + 바로 밑 작은 단골메뉴 등록하기. 모바일 폭에서도 좌우 2열 유지 */
+.kiosk.khome-wrap{min-height:0;gap:10px}
+.khome{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:stretch}
+.khome-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.khome-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;min-height:170px;padding:14px 8px;word-break:keep-all;overflow-wrap:anywhere}
+.khome-gen{flex:1;height:100%}
+.khome-ls{flex:1}
+.khome-btn .kt{font-size:1.25em;font-weight:800}
+.khome-btn small{font-size:.75em;line-height:1.35}
+.khome .kb-link{align-self:stretch;margin:0;text-align:center;word-break:keep-all;overflow-wrap:anywhere;line-height:1.3}
+.khome .kb-link small{display:block;margin:2px 0 0}
+.kst{display:block;font-size:.72em;font-weight:600;background:rgba(0,0,0,.28);border-radius:8px;padding:3px 6px;margin-top:2px}
+.kst.sug{background:#ffd54a;color:#222}
+.kb.suggested{outline:3px dashed #ffd54a;outline-offset:3px}
+.khome-note{margin:0;text-align:center;color:#c7d0d6 !important}
+@media (max-width:360px){.khome-btn{min-height:150px;padding:12px 6px}.khome-btn .kt{font-size:1.1em}}
